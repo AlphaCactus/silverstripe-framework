@@ -1,10 +1,10 @@
 <?php
 /**
- * GridFieldPaginator paginates the gridfields list and adds controlls to the
- * bottom of the gridfield.
+ * GridFieldPaginator paginates the {@link GridField} list and adds controls 
+ * to the bottom of the {@link GridField}.
  * 
  * @package framework
- * @subpackage fields-relational
+ * @subpackage fields-gridfield
  */
 class GridFieldPaginator implements GridField_HTMLProvider, GridField_DataManipulator, GridField_ActionProvider {
 	
@@ -114,23 +114,6 @@ class GridFieldPaginator implements GridField_HTMLProvider, GridField_DataManipu
 		
 		return $state;
 	}
-	
-	
-	/**
-	 * filters items from the dataList based on canView permission.
-	 * 
-	 * @param SS_List $dataList - the complete list of items the GridField is to display
-	 * @return ArrayList - a list that only has items the current member canView  
-	 */
-	function getListWithPermissionApplied( SS_List $dataList ) {
-		$dataListWithPermissions = new ArrayList();
-		foreach( $dataList as $item ) {
-			if( $item->canView() )
-				$dataListWithPermissions->add($item);
-		}
-		return $dataListWithPermissions;
-	}
-
 
 	/**
 	 *
@@ -144,16 +127,15 @@ class GridFieldPaginator implements GridField_HTMLProvider, GridField_DataManipu
 		
 		$state = $this->getGridPagerState($gridField);
 		
-		$dataListWithPermissions = $this->getListWithPermissionApplied( $dataList );
 		// Update item count prior to filter. GridFieldPageCount will rely on this value
-		$this->totalItems = $dataListWithPermissions->count();
+		$this->totalItems = $dataList->count();
 
 		if(!($dataList instanceof SS_Limitable) || ($dataList instanceof UnsavedRelationList)) {
-			return $dataListWithPermissions;
+			return $dataList;
 		}
 		
 		$startRow = $this->itemsPerPage * ($state->currentPage - 1);
-		return $dataListWithPermissions->limit((int)$this->itemsPerPage, (int)$startRow);
+		return $dataList->limit((int)$this->itemsPerPage, (int)$startRow);
 	}
 	
 	/**
